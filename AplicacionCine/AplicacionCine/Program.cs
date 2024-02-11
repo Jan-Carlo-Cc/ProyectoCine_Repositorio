@@ -1,7 +1,13 @@
+using AplicacionCine.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//Aqui se inyectan servicios al contenedor 
 builder.Services.AddControllersWithViews();
+
+//Este es el servicio que da el contexto del motor de base de datos a utilizar en este caso el de Sql Server 
+builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
