@@ -1,13 +1,17 @@
-using AplicacionCine.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using AplicacionCine.Data;
+using AplicacionCine.Areas.Identity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("AplicacionCineContextConnection") ?? throw new InvalidOperationException("Connection string 'AplicacionCineContextConnection' not found.");
+
+builder.Services.AddDbContext<AplicacionCineContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddDefaultIdentity<AplicacionCineUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AplicacionCineContext>();
 
 //Aqui se inyectan servicios al contenedor 
 builder.Services.AddControllersWithViews();
-
-//Este es el servicio que da el contexto del motor de base de datos a utilizar en este caso el de Sql Server 
-builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -29,5 +33,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages();
 
 app.Run();
